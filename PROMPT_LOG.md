@@ -142,7 +142,7 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **What I verified**
 - Claude: the linter passed, and the page loaded on my running server with all 4 fields and the 6 categories.
-- Me: submit the form, then refresh Prisma Studio and check that the new row is there. _(fill in after testing)_
+- Me: submitted the form, refreshed Prisma Studio, and the new prompt showed up as a row in the Prompt table.
 
 **Issues caught**
 - **Docs reading stopped.** Claude started reading the bundled Next.js docs first, and I stopped it. Rule from then on: only read the docs when the step needs them. This step didn't, so no docs were read.
@@ -151,3 +151,26 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **Commit message**
 - `Add create prompt form`
+
+---
+
+## Step 4: Read, list the prompts · ~9:55 PM → ready to commit 10:09 PM
+
+**My prompt (word for word)**
+> go
+
+**What Claude did**
+- **Back end:** a `PromptList` section in `app/page.js` gets every prompt with `prisma.prompt.findMany({ orderBy: { createdAt: "desc" } })`, newest first (**the database call**).
+- **Back end:** `createPrompt` in `app/actions.js` now calls `revalidatePath("/")` after saving, so the new prompt appears right away without a manual refresh.
+- **Front end:** each prompt shows as a simple card (category, title, prompt text, "why it works"), with a "No prompts yet" message when the list is empty and "Loading prompts..." while the list loads.
+
+**What I verified**
+- Claude: the linter passed. The live page showed my saved prompt from Step 3 as a card. A production build (`next build`) passed, and my dev server still worked afterward.
+- Me: add a prompt and check the card appears, then refresh the browser and check it's still there. _(fill in after testing)_
+
+**Issues caught**
+- **This project has `cacheComponents: true` turned on.** It comes with this version of the Next.js starter. In this mode, a database read has to be wrapped in `<Suspense>`, which shows a loading message while the data arrives. The docs say to do this for any uncached database read. Claude did not test what happens without it. Claude found this in the config, read only the docs needed for this step (fetching data, `revalidatePath`, refreshing after a save), and wrapped the list.
+- **Build warning about `sslmode=require`.** The Postgres connection package warns that `sslmode=require` in the Neon link will mean something slightly different in a future version. Nothing is broken. Optional fix: change it to `sslmode=verify-full` in `.env`.
+
+**Commit message**
+- `Show saved prompts on home page`

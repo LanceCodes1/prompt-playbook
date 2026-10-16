@@ -1,5 +1,6 @@
 "use server"; // everything in this file runs on the server, never in the browser
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { CATEGORIES } from "@/lib/categories";
 
@@ -18,4 +19,7 @@ export async function createPrompt(formData) {
   await prisma.prompt.create({
     data: { title, category, promptText, whyItWorks },
   });
+
+  // Refresh the home page so the new prompt shows up right away
+  revalidatePath("/");
 }

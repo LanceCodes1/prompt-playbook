@@ -1,5 +1,29 @@
+import { Suspense } from "react";
 import { createPrompt } from "./actions";
 import { CATEGORIES } from "@/lib/categories";
+import { prisma } from "@/lib/prisma";
+
+// Shows every saved prompt as a card
+async function PromptList() {
+  // DATABASE CALL: get all prompts, newest first
+  const prompts = await prisma.prompt.findMany({ orderBy: { createdAt: "desc" } });
+
+  if (prompts.length === 0) return <p className="text-zinc-600">No prompts yet. Add the first one!</p>;
+
+  return (
+    <ul className="flex flex-col gap-4">
+      {/* One card per prompt */}
+      {prompts.map((p) => (
+        <li key={p.id} className="rounded border p-4">
+          <p className="text-sm text-zinc-600">{p.category}</p>
+          <h3 className="text-lg font-semibold">{p.title}</h3>
+          <p className="mt-2 whitespace-pre-wrap">{p.promptText}</p>
+          <p className="mt-2 text-sm"><strong>Why it works:</strong> {p.whyItWorks}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function Home() {
   return (
@@ -40,6 +64,12 @@ export default function Home() {
           Save prompt
         </button>
       </form>
+
+      <h2 className="mt-10 mb-3 text-xl font-semibold">Prompts</h2>
+      {/* Show "Loading..." while the prompts come from the database */}
+      <Suspense fallback={<p>Loading prompts...</p>}>
+        <PromptList />
+      </Suspense>
     </main>
   );
 }
