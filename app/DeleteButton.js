@@ -5,7 +5,7 @@ export default function DeleteButton() {
   return (
     <button
       type="submit"
-      className="rounded border px-3 py-1 text-red-700"
+      className="min-h-11 rounded-full border border-danger/40 px-4 py-2 text-sm font-medium text-danger transition duration-200 hover:bg-danger/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/60"
       onClick={(e) => {
         // If they click Cancel, stop the form from sending, so nothing gets deleted
         if (!confirm("Are you sure you want to delete this prompt?")) e.preventDefault();

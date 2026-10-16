@@ -279,7 +279,7 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **What I verified**
 - Claude: ran the README's `npx prisma migrate deploy` command against my database. It found the 1 migration and reported "No pending migrations to apply", so the command works and changed nothing.
-- Me: read the README before committing. _(fill in after review)_
+- Me: read the whole README. It's accurate, no changes.
 
 **Issues caught**
 - `process.loadEnvFile()` (used in `prisma.config.mjs`) needs Node 20.12 or newer, so the README says so.
@@ -302,7 +302,7 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **What I verified**
 - Claude: the linter passed and the production build passed. The live page loaded without errors, but my database was empty ("No prompts yet"), so Claude couldn't see the button on a real card. Claude never clicks Delete or opens pop-ups in the browser.
-- Me: add a test prompt, click Delete, then Cancel, and check the card stays. Click Delete, then OK, and check it's gone after a refresh. _(fill in after testing)_
+- Me: the delete confirmation works. Cancel kept the card. OK deleted it, and it stayed gone after a refresh.
 
 **Issues caught**
 - **A pop-up needs browser code.** `app/page.js` runs on the server and can't show a pop-up, so only the button moved into a small `"use client"` file. The form and the server function stayed where they were.
@@ -310,3 +310,59 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **Commit message**
 - `Ask before deleting a prompt`
+
+---
+
+## Step 7: Styling · ready to commit 11:55 PM
+
+**My prompt (word for word)**
+> Log update: Delete confirmation works. Cancel kept the card, and OK deleted it and it stayed gone after refresh. README: I read the whole thing and it’s accurate. No changes. Update both log entries and commit them with the styling step.
+
+**What Claude did**
+- **Front end only:** restyled `app/page.js` with Tailwind classes. The page now has a bigger title, a light-indigo tips card (2 columns on wider screens, stacked on a phone), and the form in a white card. Fields are larger, with a blue outline when you click into them, and **Save prompt** is a big indigo button.
+- **Prompt cards:** each one has a colored category label (Job Search blue, Resume violet, Music pink, Sports orange, LA Life amber, Learning green), the prompt text in a soft grey box, and larger 👍 and Delete buttons (at least 44px tall, so they're easy to tap on a phone).
+- **`app/globals.css`:** a warm off-white background, the Geist font across the whole page (the starter had been overriding it with Arial), and dark mode removed, so the demo looks the same on every laptop.
+
+**What I verified**
+- Claude: compared every logic line (`action=`, `name=`, hidden ids, `required`, Prisma calls, the confirm pop-up) before and after. They're identical in `app/page.js` and `app/DeleteButton.js`. `git diff` shows `app/actions.js`, `lib/` and `prisma/` untouched. The linter passed, the production build passed, and the page loads with the new styles. The database was empty, so Claude couldn't see the styled cards.
+- Me: add a few prompts, check the cards and colors, try 👍 and Delete, and look at the page on a phone or a narrow window. _(fill in after testing)_
+
+**Issues caught**
+- **Dark mode clash.** The starter switched to a dark background when a laptop is in dark mode, but the new cards are white. Rather than style everything twice, Claude made the page always light.
+- **Font override.** `globals.css` was forcing Arial, even though the layout loads the Geist font. Fixed, so Geist is used everywhere.
+- **Following my rule "Don't change working logic when I ask for styling":** Claude ran an automatic before-and-after check on the logic lines, instead of just promising it didn't change them.
+
+**Commit message**
+- `Style the app`
+
+---
+
+## Step 7b: Fix unreadable text + dark premium restyle · ready to commit 12:01 AM
+
+**My prompt (word for word)**
+> The styling is broken: light text on white panels, unreadable. First, find and fix the cause (likely a light/dark mode conflict in globals.css) and force a single dark theme. Then restyle with a premium Apple / Framer / Linear look: Colors (use exactly): background #05070D, panels white at 4% with a 1px white/10% border, main text #F5F7FA, muted text #9AA4B2, accent cyan #22D3EE, Delete red #F43F5E. Typography: Geist (already installed), a large bold title with a subtle white-to-cyan gradient, tight letter spacing, a clear size hierarchy. Layout: generous spacing, max width about 720px, rounded-2xl panels, soft shadows, a faint cyan radial glow behind the title. Cards: gentle hover lift and border glow; the category as a small pill; the 👍 count in a pill. Inputs: dark glass, cyan focus ring; Save is a solid cyan button with dark text. Motion: subtle fade-in on load, 200ms transitions, respect reduced motion. Rule: every piece of text must be clearly readable on its background. No logic changes. 5 bullets max, then stop.
+
+**What Claude did**
+- **Found the cause:** the running dev server was still sending the **original starter CSS**. Its dark-mode rule turns text light when the Mac is in dark mode, so the white Step 7 panels got light text. My Step 7 `globals.css` edit never reached the browser.
+- **Fix:** `globals.css` now has a single dark theme (no light/dark switching) plus `color-scheme: dark`, so the dropdown is dark too. The exact colors are saved as Tailwind names (`bg-bg`, `text-ink`, `text-muted`, `bg-accent`, `text-danger`), along with a fade-in animation and a reduced-motion rule.
+- **Restyle (`app/page.js`, `app/DeleteButton.js`, classes only):** gradient title with a cyan glow, glass panels, a cyan category pill, the 👍 count in a pill, hover lift and glow on cards, a cyan focus ring, a solid cyan Save button with dark text, 200ms transitions, and a max width of 720px.
+
+**What I verified**
+- Claude: logic lines are identical to the last commit, and actions, `lib/` and `prisma/` are untouched. The linter and production build passed. The build's CSS has the new theme and no dark-mode rule.
+- Claude: checked the contrast of every text and background pair. All pass the 4.5:1 readability standard. The lowest is the grey example text in the fields (4.9:1), and main text is about 18:1.
+- Me: restart the dev server and check the page. _(fill in after testing)_
+
+**Issues caught**
+- **Stale CSS on the dev server.** The running `npm run dev` never reloaded `globals.css`, so neither Step 7 nor this restyle showed up until a restart. Claude checked what the server was actually sending instead of guessing.
+- To keep exactly the colors I gave, the 6 category colors from Step 7 were replaced with one cyan pill style.
+
+**Commit message**
+- `Dark theme restyle and fix unreadable text`
+
+**Follow-up (same step)**
+> Hard refresh didn’t help. The page renders light, the “Prompt Playbook” title is invisible, inputs have no visible borders, and Save is white on white. My Mac is in light mode, so I think you used dark-mode-only styles (dark: classes or prefers-color-scheme). Remove that dependency and apply the dark theme always: background #05070D, text #F5F7FA, inputs with dark glass background and a visible white/10% border, Save solid cyan #22D3EE with dark text, and a title that’s clearly visible. Styling only. Stop so I can check.
+
+- Claude searched the code: there are **no** `dark:` classes and no `prefers-color-scheme` anywhere, so there was nothing to remove and no code changed this round.
+- The real cause: the `npm run dev` server had been running since 7:48 PM the night before and kept sending the old CSS. A hard refresh only reloads the browser, not the server. The page uses new color names (`bg-accent`, `text-ink`) that the old CSS doesn't have, which is why the title turned see-through, the borders disappeared and Save had no color.
+- Proof: Claude started a fresh copy of the app on port 3123 and took screenshots in Chrome. Dark background, a visible gradient title, inputs with borders, and a solid cyan Save button with dark text.
+- Fix for me: restart the dev server (Ctrl+C, then `npm run dev`).
