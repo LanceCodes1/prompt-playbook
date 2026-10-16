@@ -23,3 +23,19 @@ export async function createPrompt(formData) {
   // Refresh the home page so the new prompt shows up right away
   revalidatePath("/");
 }
+
+// Called when someone clicks "Worked for me" on a card
+export async function markWorked(formData) {
+  // The card's hidden "id" field tells us which prompt was clicked
+  const id = Number(formData.get("id"));
+  if (!id) return; // ignore clicks without a valid id
+
+  // DATABASE CALL: add 1 to that prompt's workedCount
+  await prisma.prompt.update({
+    where: { id },
+    data: { workedCount: { increment: 1 } },
+  });
+
+  // Refresh the home page so the new number shows
+  revalidatePath("/");
+}

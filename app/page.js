@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { createPrompt } from "./actions";
+import { createPrompt, markWorked } from "./actions";
 import { CATEGORIES } from "@/lib/categories";
 import { prisma } from "@/lib/prisma";
 
@@ -19,6 +19,14 @@ async function PromptList() {
           <h3 className="text-lg font-semibold">{p.title}</h3>
           <p className="mt-2 whitespace-pre-wrap">{p.promptText}</p>
           <p className="mt-2 text-sm"><strong>Why it works:</strong> {p.whyItWorks}</p>
+
+          {/* Clicking the button runs markWorked on the server for this card's id */}
+          <form action={markWorked} className="mt-3">
+            <input type="hidden" name="id" value={p.id} />
+            <button type="submit" className="rounded border px-3 py-1">
+              👍 Worked for me ({p.workedCount})
+            </button>
+          </form>
         </li>
       ))}
     </ul>

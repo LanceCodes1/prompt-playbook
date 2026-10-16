@@ -166,7 +166,7 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **What I verified**
 - Claude: the linter passed. The live page showed my saved prompt from Step 3 as a card. A production build (`next build`) passed, and my dev server still worked afterward.
-- Me: add a prompt and check the card appears, then refresh the browser and check it's still there. _(fill in after testing)_
+- Me: added a prompt and its card appeared right away. I refreshed the browser and it was still there.
 
 **Issues caught**
 - **This project has `cacheComponents: true` turned on.** It comes with this version of the Next.js starter. In this mode, a database read has to be wrapped in `<Suspense>`, which shows a loading message while the data arrives. The docs say to do this for any uncached database read. Claude did not test what happens without it. Claude found this in the config, read only the docs needed for this step (fetching data, `revalidatePath`, refreshing after a save), and wrapped the list.
@@ -174,3 +174,49 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **Commit message**
 - `Show saved prompts on home page`
+
+---
+
+## Side step: Push to GitHub · ~10:15 PM
+
+**My prompt (word for word)**
+> Yes, the card appeared right away and stayed after refresh. Update the log. Before Step 5, help me push to a new public GitHub repo called prompt-playbook. Confirm .env is not tracked first. Then go to Step 5, the 👍 Worked for me counter.
+
+**What Claude did**
+- Checked that `.env` is safe: git doesn't track it, it was never in any commit, and `.gitignore` blocks it. Also scanned every commit for database links or passwords and found none.
+- Created the public repo with the GitHub CLI and pushed the 6 commits: https://github.com/LanceCodes1/prompt-playbook
+- Afterward, asked GitHub directly for `.env`, and it answered "Not Found".
+
+**What I verified**
+- Claude: the file list on GitHub, with no `.env` in it. Local `main` matches `origin/main`.
+- Me: open the repo page on GitHub. _(fill in after checking)_
+
+**Issues caught**
+- Before creating the repo, Claude checked that I didn't already have one called `prompt-playbook`.
+- The Step 4 log update wasn't committed yet, so it wasn't pushed. It goes in with the Step 5 commit.
+
+**Commit message**
+- None (push only, no new commit).
+
+---
+
+## Step 5: "Worked for me" counter, Update · ~10:20 PM → ready to commit 10:52 PM
+
+**My prompt (word for word)**
+> (Same prompt as the GitHub side step above: "...Then go to Step 5, the 👍 Worked for me counter.")
+
+**What Claude did**
+- **Back end:** a `markWorked` server function in `app/actions.js` adds 1 to that prompt's count with `prisma.prompt.update({ where: { id }, data: { workedCount: { increment: 1 } } })` (**the database call**), then refreshes the page with `revalidatePath("/")`.
+- **Front end:** each card in `app/page.js` has a "👍 Worked for me (N)" button. It's a tiny form with a hidden `id` field, so the server knows which prompt was clicked, and it needs no extra JavaScript.
+- Used `increment: 1`, so the database does the adding. Two people clicking at the same moment both get counted.
+
+**What I verified**
+- Claude: the linter passed, all 3 cards on the live page showed "👍 Worked for me (0)", and the production build passed.
+- Me: click 👍 and check the number goes up, then refresh and check it stays. _(fill in after testing)_
+
+**Issues caught**
+- No database change was needed, because `workedCount` was added back in Step 2.
+- Added a guard so a click without a valid id is ignored instead of causing an error.
+
+**Commit message**
+- `Add worked for me counter`
