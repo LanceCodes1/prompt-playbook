@@ -6,3 +6,11 @@
 - Never commit for me. Stop after each working piece so I can test and commit.
 - DATABASE_URL lives in .env only. Confirm .env is in .gitignore before any commit.
 - Stack: Next.js (App Router), Prisma, Neon Postgres. No auth, no extra libraries.
+## Prompt log
+- After each step, append an entry to PROMPT_LOG.md before I commit, using this format:
+  - Step + time
+  - My prompt (word for word)
+  - What you did (2–3 bullets)
+  - What I verified
+  - Issues caught
+  - Commit message
