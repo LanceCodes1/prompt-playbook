@@ -77,7 +77,7 @@ The 👍 and Delete buttons work the same way. Each is a tiny form with a hidden
 | **Create** | Fills in the form and clicks **Save prompt** | `createPrompt` | `prisma.prompt.create(...)` |
 | **Read** | Opens the home page and sees every prompt, newest first | `PromptList` in `app/page.js` | `prisma.prompt.findMany(...)` |
 | **Update** | Clicks **👍 Worked for me** | `markWorked` | `prisma.prompt.update(...)` with `increment: 1` |
-| **Delete** | Clicks **Delete** on a card | `deletePrompt` | `prisma.prompt.deleteMany(...)` |
+| **Delete** | Clicks **Delete** on a card, then **OK** on "Are you sure?" | `deletePrompt` | `prisma.prompt.deleteMany(...)` |
 
 Data stays after a refresh because it lives in Neon, not in the browser.
 
@@ -99,6 +99,7 @@ Prompt
 ```
 app/page.js           the home page: tips card, form, list of prompt cards
 app/actions.js        server functions: createPrompt, markWorked, deletePrompt
+app/DeleteButton.js   the Delete button; asks "Are you sure?" in the browser first
 lib/prisma.js         the one shared database connection
 lib/categories.js     the 6 categories (used by the form and the server check)
 prisma/schema.prisma  what the Prompt table looks like
@@ -111,7 +112,6 @@ prisma.config.mjs     tells Prisma where the database is (reads .env)
 This is a class demo, so some things are left out on purpose:
 
 - **No login.** Anyone who can open the site can add, 👍 or delete any prompt.
-- **No delete confirmation.** Delete removes a prompt right away, and there's no undo.
 - **👍 has no limit.** One person can click it as many times as they want.
 - **No editing.** To fix a typo in a prompt, delete it and add it again.
 - **No search or category filter.** All prompts show in one list, newest first.

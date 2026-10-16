@@ -287,3 +287,26 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **Commit message**
 - `Write README`
+
+---
+
+## Side step: "Are you sure?" before Delete · ready to commit 11:50 PM
+
+**My prompt (word for word)**
+> Add an “Are you sure you want to delete this prompt?” confirmation before Delete runs. If I click Cancel, nothing happens. Keep the change small. Then remove “No delete confirmation” from the README’s known limitations and update the log. Stop so I can test and commit.
+
+**What Claude did**
+- **Front end:** added a new file, `app/DeleteButton.js`. It's a small browser-side button that shows "Are you sure you want to delete this prompt?" If you click Cancel, it stops the form from sending, so the server is never called. `app/page.js` now uses `<DeleteButton />` in place of the old button.
+- **Back end:** no change. `deletePrompt` in `app/actions.js` is the same.
+- **README:** removed "No delete confirmation" from Known limitations, updated the Delete row in the CRUD table ("then **OK** on 'Are you sure?'"), and added `DeleteButton.js` to the project files list.
+
+**What I verified**
+- Claude: the linter passed and the production build passed. The live page loaded without errors, but my database was empty ("No prompts yet"), so Claude couldn't see the button on a real card. Claude never clicks Delete or opens pop-ups in the browser.
+- Me: add a test prompt, click Delete, then Cancel, and check the card stays. Click Delete, then OK, and check it's gone after a refresh. _(fill in after testing)_
+
+**Issues caught**
+- **A pop-up needs browser code.** `app/page.js` runs on the server and can't show a pop-up, so only the button moved into a small `"use client"` file. The form and the server function stayed where they were.
+- **Empty database.** The page showed 0 Delete buttons. Claude checked, and the page wasn't broken: all the prompts had been deleted during testing.
+
+**Commit message**
+- `Ask before deleting a prompt`

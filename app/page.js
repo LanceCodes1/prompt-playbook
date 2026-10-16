@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { createPrompt, markWorked, deletePrompt } from "./actions";
+import DeleteButton from "./DeleteButton";
 import { CATEGORIES } from "@/lib/categories";
 import { prisma } from "@/lib/prisma";
 
@@ -37,12 +38,10 @@ async function PromptList() {
               </button>
             </form>
 
-            {/* Clicking Delete runs deletePrompt on the server for this card's id */}
+            {/* Delete asks "Are you sure?" first, then runs deletePrompt on the server for this card's id */}
             <form action={deletePrompt}>
               <input type="hidden" name="id" value={p.id} />
-              <button type="submit" className="rounded border px-3 py-1 text-red-700">
-                Delete
-              </button>
+              <DeleteButton />
             </form>
           </div>
         </li>
