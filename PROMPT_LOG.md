@@ -94,7 +94,7 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 - Claude added a temporary test page to my running app. It asked the database how many prompts exist and got back `{"ok":true,"count":0}`, which is correct for a new table. Claude deleted the test page afterward.
 - Claude checked that no `tsconfig.json` appeared, so Next.js didn't try to switch the project to TypeScript.
 - I made the commit myself. 8 files, with no `.env` and no generated code.
-- I may also have checked the table in Prisma Studio (`npx prisma studio`): _(fill in if you did)_.
+- I opened Prisma Studio (`npx prisma studio`) and saw the empty Prompt table.
 
 **Issues caught**
 - **Prisma 8.0 release candidate.** A plain `npm install prisma` installed `8.0.0-rc.23`, an unfinished test version, because Prisma's "latest" tag pointed to it. Claude saw this, checked the version tags, and switched to the stable **7.10.1** so the demo wouldn't break.
@@ -109,20 +109,45 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 ---
 
-## Step 3: Create, the add-prompt form · started ~9:20 PM (in progress)
+## Side step: Prompt log + log rule · ~9:25 PM → committed 9:28 PM and ~9:30 PM
 
 **My prompt (word for word)**
-> (Went ahead after the Step 2 commit. No typed message.)
+> Create PROMPT_LOG.md and backfill tonight’s work. For each step, include: Step + time, My prompt (word for word), What you did (2–3 bullets), What I verified (how I checked it worked), Issues caught (e.g., the Prisma 8.0 release candidate we switched to stable 7.10.1, and create-next-app refusing a non-empty folder), Commit message
 
 **What Claude did**
-- Started reading the Next.js docs that come with this version (the forms and Server Actions guides), as `AGENTS.md` says to.
-- I stopped it before any code was written. Then I asked for this log.
+- Created this file and filled it in for everything up to Step 2, using file timestamps and git history for the times.
+- I then added a "Prompt log" rule to `CLAUDE.md` myself, so a new entry gets written after every step.
 
 **What I verified**
-- Not yet.
+- Read the log, and filled in the Prisma Studio check that Claude had left blank.
 
 **Issues caught**
-- None yet.
+- Claude marked the Prisma Studio check as "fill in" because it couldn't know whether I'd done it, instead of guessing.
+- My `CLAUDE.md` commit was typed without `!`, so it went to the chat. Claude didn't commit for me and told me to retype it.
 
 **Commit message**
-- Not committed yet.
+- `Add prompt log` (a68e116) and `Add prompt log rule` (c19fa92)
+
+---
+
+## Step 3: Create, the add-prompt form · ~9:20 PM → ready to commit 9:37 PM
+
+**My prompt (word for word)**
+> Yes, I opened Prisma Studio and saw the empty Prompt table. Update that line in the log. Go to step 3. Read the Next.js docs only if you need them for this step.
+
+**What Claude did**
+- **Back end:** in `app/actions.js`, added `createPrompt`, a server function. It reads the form, skips saving if any field is empty or the category isn't one of the 6, then saves with `prisma.prompt.create(...)` (**the database call**).
+- **Front end:** replaced the Next.js starter page in `app/page.js` with an "Add a prompt" form: title, a category dropdown, prompt text and "why it works". Every field is required.
+- Put the 6 categories in their own file, `lib/categories.js`, so the dropdown and the server check use the same list. Also changed the browser tab title to "Prompt Playbook".
+
+**What I verified**
+- Claude: the linter passed, and the page loaded on my running server with all 4 fields and the 6 categories.
+- Me: submit the form, then refresh Prisma Studio and check that the new row is there. _(fill in after testing)_
+
+**Issues caught**
+- **Docs reading stopped.** Claude started reading the bundled Next.js docs first, and I stopped it. Rule from then on: only read the docs when the step needs them. This step didn't, so no docs were read.
+- **The category list needed its own file.** A `"use server"` file is only allowed to share functions, not plain lists, so the category list couldn't live in `actions.js`.
+- **No list on the page yet.** After saving, the form clears, but the prompt doesn't show up on the page until Step 4. For now, Prisma Studio is how to check it saved.
+
+**Commit message**
+- `Add create prompt form`
