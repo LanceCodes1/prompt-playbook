@@ -257,7 +257,7 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **What I verified**
 - Claude: the linter passed, the live page shows a Delete button on every card, and the production build passed. Claude didn't click Delete, so none of my real prompts were removed.
-- Me: delete a card, check it disappears, then refresh and check it's still gone. _(fill in after testing)_
+- Me: deleted a test prompt, and it stayed gone after a refresh.
 
 **Issues caught**
 - **Tips card wasn't committed yet.** Before starting, Claude saw that the tips card change hadn't been committed. It waited for me to commit it, so Delete gets its own commit, following my one-piece-per-commit rule.
@@ -265,3 +265,25 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **Commit message**
 - `Add delete button`
+
+---
+
+## Side step: Write the README · ready for review 11:44 PM
+
+**My prompt (word for word)**
+> Log update: I deleted a test prompt and it stayed gone after refresh. Update the log. Then write a README: what Prompt Playbook is, the problem it solves, the stack, how to run it locally, the data flow (browser → server → Prisma → database → screen), full CRUD, and known limitations (no login, no delete confirmation). Link PROMPT_LOG.md. Stop so I can review and commit.
+
+**What Claude did**
+- Replaced the Next.js starter `README.md` with one for Prompt Playbook. It covers what the app is, the problem it solves, the stack, 4-step local setup, the data flow (walked through with "Save prompt"), a CRUD table showing each database call, the data model, the project files, known limitations, and a link to this log.
+- Known limitations: no login and no delete confirmation (as asked), plus no 👍 limit, no editing, no search or filter, and no error message if the server rejects a prompt.
+
+**What I verified**
+- Claude: ran the README's `npx prisma migrate deploy` command against my database. It found the 1 migration and reported "No pending migrations to apply", so the command works and changed nothing.
+- Me: read the README before committing. _(fill in after review)_
+
+**Issues caught**
+- `process.loadEnvFile()` (used in `prisma.config.mjs`) needs Node 20.12 or newer, so the README says so.
+- Prisma commands fail if `.env` is missing, so the README tells people to create `.env` before running them.
+
+**Commit message**
+- `Write README`
