@@ -1,0 +1,23 @@
+// The schema describes what our database tables look like.
+
+// Prisma builds a ready-to-use database helper from this file into lib/generated/prisma
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+// We're using Postgres (hosted on Neon). The connection link comes from prisma.config.mjs
+datasource db {
+  provider = "postgresql"
+}
+
+// One row in this table = one saved prompt
+model Prompt {
+  id          Int      @id @default(autoincrement()) // unique number, given out automatically
+  title       String
+  category    String // one of: Job Search, Resume, Music, Sports, LA Life, Learning
+  promptText  String // the prompt people copy and paste into an AI
+  whyItWorks  String // short explanation of why the prompt works
+  workedCount Int      @default(0) // "worked for me" counter, starts at 0
+  createdAt   DateTime @default(now()) // filled in automatically when the prompt is saved
+}
