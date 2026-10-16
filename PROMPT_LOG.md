@@ -242,3 +242,26 @@ Date: Thursday, October 15, 2026 (times are Pacific, taken from file timestamps 
 
 **Commit message**
 - `Add prompt tips card and form examples`
+
+---
+
+## Step 6: Delete · ready to commit 11:40 PM
+
+**My prompt (word for word)**
+> Log update: I clicked 👍, the number went up by 1, and it stayed after refresh. The tips card and example text look good, and saving a prompt still works. Update the log entries. Go to Step 6: Delete.
+
+**What Claude did**
+- **Back end:** a `deletePrompt` server function in `app/actions.js` removes the prompt with `prisma.prompt.deleteMany({ where: { id } })` (**the database call**), then refreshes the page with `revalidatePath("/")`.
+- **Front end:** each card in `app/page.js` now has a red "Delete" button next to 👍. It works the same way as 👍: a tiny form with a hidden `id`. It deletes right away, with no "are you sure?" pop-up, as planned.
+- Used `deleteMany` instead of `delete`. If the same prompt gets deleted twice (a double-click, or two open tabs), it does nothing instead of crashing.
+
+**What I verified**
+- Claude: the linter passed, the live page shows a Delete button on every card, and the production build passed. Claude didn't click Delete, so none of my real prompts were removed.
+- Me: delete a card, check it disappears, then refresh and check it's still gone. _(fill in after testing)_
+
+**Issues caught**
+- **Tips card wasn't committed yet.** Before starting, Claude saw that the tips card change hadn't been committed. It waited for me to commit it, so Delete gets its own commit, following my one-piece-per-commit rule.
+- **Delete could crash on a double-click.** Plain `delete` throws an error if the prompt is already gone. `deleteMany` just removes zero rows instead.
+
+**Commit message**
+- `Add delete button`

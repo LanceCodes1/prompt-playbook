@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { createPrompt, markWorked } from "./actions";
+import { createPrompt, markWorked, deletePrompt } from "./actions";
 import { CATEGORIES } from "@/lib/categories";
 import { prisma } from "@/lib/prisma";
 
@@ -29,12 +29,22 @@ async function PromptList() {
           <p className="mt-2 text-sm"><strong>Why it works:</strong> {p.whyItWorks}</p>
 
           {/* Clicking the button runs markWorked on the server for this card's id */}
-          <form action={markWorked} className="mt-3">
-            <input type="hidden" name="id" value={p.id} />
-            <button type="submit" className="rounded border px-3 py-1">
-              👍 Worked for me ({p.workedCount})
-            </button>
-          </form>
+          <div className="mt-3 flex gap-2">
+            <form action={markWorked}>
+              <input type="hidden" name="id" value={p.id} />
+              <button type="submit" className="rounded border px-3 py-1">
+                👍 Worked for me ({p.workedCount})
+              </button>
+            </form>
+
+            {/* Clicking Delete runs deletePrompt on the server for this card's id */}
+            <form action={deletePrompt}>
+              <input type="hidden" name="id" value={p.id} />
+              <button type="submit" className="rounded border px-3 py-1 text-red-700">
+                Delete
+              </button>
+            </form>
+          </div>
         </li>
       ))}
     </ul>

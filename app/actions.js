@@ -39,3 +39,17 @@ export async function markWorked(formData) {
   // Refresh the home page so the new number shows
   revalidatePath("/");
 }
+
+// Called when someone clicks "Delete" on a card
+export async function deletePrompt(formData) {
+  // The card's hidden "id" field tells us which prompt to remove
+  const id = Number(formData.get("id"));
+  if (!id) return; // ignore clicks without a valid id
+
+  // DATABASE CALL: remove that prompt from the Prompt table
+  // (deleteMany doesn't crash if it was already deleted, like after a double-click)
+  await prisma.prompt.deleteMany({ where: { id } });
+
+  // Refresh the home page so the card disappears
+  revalidatePath("/");
+}
